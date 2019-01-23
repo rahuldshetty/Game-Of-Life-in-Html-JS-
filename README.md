@@ -1,6 +1,6 @@
 # Game-Of-Life-in-Html-JS-
 Demo of Game of Life by Conway.
-Follow this link to test the demo: (https://rahuldshetty.github.io/Game-Of-Life-in-Html-JS-/gameOfLife.html)
+Follow this link to test the demo: [Link](https://rahuldshetty.github.io/Game-Of-Life-in-Html-JS-/gameOfLife.html)
 
 # Rules 
 The grid consists of various cells and each cell can be alive or dead.
