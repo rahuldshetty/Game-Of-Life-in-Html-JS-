@@ -11,3 +11,5 @@ The grid consists of various cells and each cell can be alive or dead.
 2. Any live cell with 2 or 3 live neighbours lives on to next gen.
 3. Any live cell with more than 3 live neighbors die.(over population)
 4. Any live cell with exactly 3 live neighbors becomes live cell.(reproduction)
+
+Github Pages: [Link](https://rahuldshetty.github.io/Game-Of-Life-in-Html-JS-/)
