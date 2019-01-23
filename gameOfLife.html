@@ -1,0 +1,217 @@
+<!--
+Rules
+1. Any live cell with fewer than 2 live neighbors die,(under population)
+2. ............. with 2 or 3 live neighbours lives on to next gen.
+3. .............. with more than 3 live neighbors die, (over population)
+4. ..............with exactly 3 live neighbors becomes live cell'(reproduction)
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Game Of Life</title>
+</head>
+<script type="text/javascript">
+	var HEIGHT=100,WIDTH=100;
+	var pos = { x: 0, y: 0 };
+	
+	var isPlaying = false;
+	var showGrid=false;
+	document.addEventListener('mouseup', drawStroke);
+	
+
+	
+	var grid=[];
+	var time=12;
+	var timer;
+
+
+
+	function drawGrid(){
+		var canvas=document.getElementById('canvass');
+		var ctx=canvas.getContext('2d');
+		if(showGrid==false){
+			ctx.clearRect(0,0,500,500);
+			draw();
+			return;
+
+		}
+		
+		for(var x=0;x<WIDTH*5;x+=5)
+		{
+			ctx.moveTo(x,0);
+			ctx.lineTo(x,WIDTH*5);
+		}
+		for(var x=0;x<HEIGHT*5;x+=5)
+		{
+			ctx.moveTo(0,x);
+			ctx.lineTo(WIDTH*5,x);
+		}
+		ctx.strokeStyle="black";
+		ctx.stroke();	
+	}
+
+	function genGrid(){
+		for(var j=0;j<WIDTH;j++)
+			for(var i=0;i<HEIGHT;i++ )
+				grid[j][i]=Math.random() < 0.1;
+			draw();
+			updateShowGrid();
+	}
+
+	function init(){
+		for(var i=0;i<WIDTH;i++){
+			var temp=[]
+			for(var j=0;j<HEIGHT;j++)
+			{
+				temp.push(Math.random() < 0.1);
+			}
+			grid.push(temp);
+		}
+		draw();
+		updateShowGrid();
+	}
+	function setPosition(e) {
+	  var xqu = Math.floor(e.clientX/5);
+	  var yqu = Math.floor(e.clientY/5);
+
+	  grid[xqu][yqu]=1;
+
+	  pos.x=xqu*5-1;
+	  pos.y=yqu*5-1;
+
+
+	}
+
+	function drawStroke(e) {
+		if(isPlaying)return;
+	  var canvas=document.getElementById('canvass');
+	var ctx=canvas.getContext('2d');
+	setPosition(e);
+	  ctx.fillRect(pos.x-8,pos.y-8,5,5);
+	}
+
+
+	function setSliderValue()
+	{
+		var wasPlaying=isPlaying;
+		if(wasPlaying)
+			pause();
+		var slider=document.getElementById('slider');
+		var speed = 100-slider.value;
+		time=speed;
+		if(wasPlaying)
+			play();
+
+	}	
+
+	function clears(){
+		var canvas=document.getElementById('canvass');
+		var ctx=canvas.getContext('2d');
+		ctx.clearRect(0,0,500,500);
+		for(var i=0;i<WIDTH;i++)
+			for(var j=0;j<WIDTH;j++)
+				grid[i][j]=0;
+		if(showGrid==true)
+			drawGrid();
+	}
+
+
+	function play()
+	{
+		if(!isPlaying){
+			timer=setInterval(loop,time);
+			isPlaying=true;
+		}
+	}
+
+	function pause(){
+		if(isPlaying){
+			clearTimeout(timer);
+			isPlaying=false;
+		}
+	}
+
+	function updateShowGrid(){
+		var checkbox=document.getElementById('gridYesNo');
+		showGrid=checkbox.checked;
+		drawGrid();
+	}
+
+	function loop(){
+		var neighbors;
+		for(var i=0;i<WIDTH;i++)
+		{
+			for(var j=0;j<HEIGHT;j++)
+			{
+				neighbors=num_neighbors(i,j);
+				grid[i][j] = (grid[i][j]) ? 
+							neighbors == 2 || neighbors == 3 : 
+							neighbors == 3; 
+
+			}
+		}
+		draw();
+	}
+	function num_neighbors(x,y){
+		var total=0;
+		if(y>0)
+			total+= grid[x][y-1]? 1:0;
+		if(y<HEIGHT-1)
+			total+=grid[x][y+1]? 1:0;
+		if(x>0)
+			total+=grid[x-1][y]?1:0;
+		if(x<WIDTH-1)
+			total+=grid[x+1][y]?1:0;
+		if(y>0&&x>0)
+			total+= grid[x-1][y-1]?1:0;
+		if(y>0 && x<WIDTH-1)
+			total+=grid[x+1][y-1]?1:0;
+		if(y<HEIGHT-1 && x>0)
+			total+= grid[x-1][y+1]?1:0;
+		if(y<HEIGHT-1 && x<WIDTH-1)
+			total+=grid[x+1][y+1]? 1:0;
+		return total;
+	}
+
+	function draw(){
+		var canvas=document.getElementById('canvass');
+		var ctx=canvas.getContext('2d');
+		if(canvas!=null){
+			ctx.clearRect(0,0,500,500);
+			for(var i=0;i<HEIGHT*5;i+=5)
+				for(var j=0;j<WIDTH*5;j+=5)
+					if(grid[i/5][j/5]) ctx.fillRect(i,j,5,5);
+			if(showGrid==true)
+				drawGrid();
+		}
+	}
+
+</script>
+<style type="text/css">
+.block{
+	padding:10px;
+	display: block;
+}
+</style>
+<body onload="init()" >
+	<canvas id="canvass" width="500" height="500"  style='border:1px solid black;'> </canvas>
+
+	<div class="block" >
+	Slow<input type='range' id='slider' onchange="setSliderValue()">Fast
+	</div>
+	<div class="block" >
+	<input type='submit' id='random' value='Random' onclick="genGrid()" >
+	<input type='submit' id='play' value='Play' onclick="play()">
+	<input type='submit' id='pause' value='Pause' onclick="pause()">
+	<input type='submit' id='clear' value='Clear' onclick="clears()" >
+	</div>
+	<div class='block'>
+	Show Grid:<input type='checkbox' id='gridYesNo' onclick="updateShowGrid()">
+	</div>
+
+	
+
+
+</body>
+</html>
